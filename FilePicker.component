@@ -19,7 +19,9 @@
         "fileNameField":"File Name attribute name",
         "mimeTypeField":"MimeType attribute name",
         "extensionField":"File Extension attribute name",
-        "allowedExtensions":"Permitted extensions.  e.g. jpg, tif, png"
+        "allowedExtensions":"Permitted extensions.  e.g. jpg, tif, png",
+        "width":"Width. 50px, 10vw, 3rem etc. 'auto' is default",
+        "height":"Height. 50px, 10vh, 3rem etc. 'auto' is default"
     },
     "configurationEditors":["LABEL","WIDTH","HEIGHT","STATE_VALUE"],
     "designTimeImageURL":null,

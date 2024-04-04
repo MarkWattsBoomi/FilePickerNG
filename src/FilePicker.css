@@ -1,7 +1,8 @@
 .file-picker
 {
     border: 2px solid black;
-    display: block;
+    display: flex;
+    flex-direction: column;
     position: relative;
     box-sizing: content-box;
 }
@@ -16,6 +17,7 @@
 
 .file-picker-header
 {
+    flex-grow: 0;
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -71,7 +73,7 @@
 .file-picker-body
 {
     background-color:#fefefe;
-    flex-grow: 0;
+    flex-grow: 1;
     display: flex;
     position: relative;
     overflow: hidden;

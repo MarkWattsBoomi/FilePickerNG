@@ -7140,6 +7140,7 @@ var _FilePicker = class extends import_react3.default.Component {
     };
     let attr = this.component.getAttribute("allowedExtensions", "*");
     let types = attr.split(",");
+    let imgAdded = false;
     types.forEach((type) => {
       type = type.trim().toLowerCase();
       switch (type) {
@@ -7175,6 +7176,32 @@ var _FilePicker = class extends import_react3.default.Component {
               }
             }
           );
+          break;
+        case "pdf":
+          pickerOpts.types.push(
+            {
+              description: "PDF Files",
+              accept: {
+                "application/pdf": [".pdf"]
+              }
+            }
+          );
+          break;
+        case "png":
+        case "jpg":
+        case "gif":
+        case "jpeg":
+          if (imgAdded === false) {
+            pickerOpts.types.push(
+              {
+                description: "Image Files",
+                accept: {
+                  "image/*": [".png", ".gif", ".jpeg", ".jpg"]
+                }
+              }
+            );
+            imgAdded = true;
+          }
           break;
       }
     });
@@ -7262,6 +7289,7 @@ var _FilePicker = class extends import_react3.default.Component {
           objData.isSelected = true;
           this.component.setStateValue(objData);
         }
+        this.forceUpdate();
         if (this.component.getAttribute("onSelected", "").length > 0 && this.component.outcomes[this.component.getAttribute("onSelected")]) {
           this.component.triggerOutcome(this.component.getAttribute("onSelected"));
         }
@@ -7424,12 +7452,12 @@ var _FilePicker = class extends import_react3.default.Component {
   */
   render() {
     switch (this.mode) {
-      case "default":
-        return this.defaultRender();
       case "basic":
         return this.basicRender();
       case "icon":
         return this.iconRender();
+      default:
+        return this.defaultRender();
     }
   }
   iconRender() {
@@ -7552,13 +7580,14 @@ var _FilePicker = class extends import_react3.default.Component {
   defaultRender() {
     let componentClass = this.component.getAttribute("classes", "");
     const style = {};
-    style.width = "fit-content";
-    style.height = "fit-content";
+    style.width = "auto";
+    style.height = "auto";
     if (this.component.isVisible === false) {
       style.display = "none";
     }
     if (this.component.getAttribute("width")) {
       style.width = this.component.getAttribute("width");
+      style.minHeight = style.width;
     }
     if (this.component.getAttribute("height")) {
       style.height = this.component.getAttribute("height");
@@ -7575,7 +7604,7 @@ var _FilePicker = class extends import_react3.default.Component {
     }
     let filePick;
     let clearButton;
-    filePick = this.pickFile;
+    filePick = this.chooseFile;
     clearButton = /* @__PURE__ */ import_react3.default.createElement(
       "span",
       {
