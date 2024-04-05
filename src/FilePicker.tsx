@@ -222,7 +222,7 @@ export class _FilePicker extends React.Component<any,any> {
         }
         finally{
             console.log("done");
-            await this.fileChosen();
+            //await this.fileChosen();
         }
     }
 
