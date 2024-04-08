@@ -7319,7 +7319,6 @@ var _FilePicker = class extends import_react3.default.Component {
       console.log(e2);
     } finally {
       console.log("done");
-      await this.fileChosen();
     }
   }
   async fileChosen() {
@@ -7331,10 +7330,19 @@ var _FilePicker = class extends import_react3.default.Component {
       let dataURL = this.state.imageData;
       let maxSize = parseInt(this.component.getAttribute("maxSizeKB", "0"));
       if (maxSize > 0 && size > maxSize * 1e3) {
+        let maxMB = maxSize / 1e3;
+        let actMB = size / 1e3 / 1e3;
+        let msg = this.component.getAttribute(
+          "oversizeMessage",
+          "The file you have chosen is larger than the maximum allowd $2 MB"
+        );
+        msg = await this.component.inflateValue(msg);
+        msg = msg.replace("$1", actMB.toString());
+        msg = msg.replace("$2", maxMB.toString());
         this.messageBox.showDialog(
           null,
           "File Too Large",
-          /* @__PURE__ */ import_react3.default.createElement("span", null, "The file you have chosen is ", size, " bytes long and exceeds the maximum file size of ", maxSize),
+          /* @__PURE__ */ import_react3.default.createElement("span", null, msg),
           [new FCMModalButton("Ok", this.messageBox.hideDialog)]
         );
       } else {

@@ -237,10 +237,17 @@ export class _FilePicker extends React.Component<any,any> {
 
             let maxSize: number = parseInt(this.component.getAttribute("maxSizeKB","0"));
             if(maxSize>0 && size>(maxSize * 1000)){
+                let maxMB: number = maxSize/1000;
+                let actMB: number = size/1000/1000;
+                let msg: string = this.component.getAttribute("oversizeMessage",
+                "The file you have chosen is larger than the maximum allowd $2 MB");
+                msg = await this.component.inflateValue(msg);
+                msg = msg.replace("$1",actMB.toString());
+                msg = msg.replace("$2",maxMB.toString());
                 this.messageBox.showDialog(
                     null,
                     "File Too Large",
-                    (<span>The file you have chosen is { size } bytes long and exceeds the maximum file size of { maxSize }</span>),
+                    (<span>{msg}</span>),
                     [new FCMModalButton("Ok",this.messageBox.hideDialog)]
                 );
             }
