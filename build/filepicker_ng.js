@@ -7141,76 +7141,100 @@ var _FilePicker = class extends import_react3.default.Component {
     let attr = this.component.getAttribute("allowedExtensions", "*");
     let types = attr.split(",");
     let imgAdded = false;
-    types.forEach((type) => {
-      type = type.trim().toLowerCase();
-      switch (type) {
-        case "*":
-          pickerOpts.excludeAcceptAllOption = false;
-          break;
-        case "csv":
-          pickerOpts.types.push(
-            {
-              description: "CSV Files",
-              accept: {
-                "text/csv": [".csv"]
-              }
-            }
-          );
-          break;
-        case "xlsx":
-          pickerOpts.types.push(
-            {
-              description: "Excel Files",
-              accept: {
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsz"]
-              }
-            }
-          );
-          break;
-        case "xml":
-          pickerOpts.types.push(
-            {
-              description: "XML Files",
-              accept: {
-                "application/xhtml+xml": [".xml"]
-              }
-            }
-          );
-          break;
-        case "pdf":
-          pickerOpts.types.push(
-            {
-              description: "PDF Files",
-              accept: {
-                "application/pdf": [".pdf"]
-              }
-            }
-          );
-          break;
-        case "png":
-        case "jpg":
-        case "gif":
-        case "jpeg":
-          if (imgAdded === false) {
-            pickerOpts.types.push(
-              {
-                description: "Image Files",
-                accept: {
-                  "image/*": [".png", ".gif", ".jpeg", ".jpg"]
-                }
-              }
-            );
-            imgAdded = true;
-          }
-          break;
-      }
-    });
     try {
-      let handle = await window.showOpenFilePicker(pickerOpts);
-      if (handle[0].kind === "file") {
-        let file = await handle[0].getFile();
-        let data = await this.fileReadAsDataURL(file);
-        this.setState({ file, imageData: data }, this.fileChosen);
+      if (window.showOpenFilePicker) {
+        types.forEach((type) => {
+          type = type.trim().toLowerCase();
+          switch (type) {
+            case "*":
+              pickerOpts.excludeAcceptAllOption = false;
+              break;
+            case "csv":
+              pickerOpts.types.push(
+                {
+                  description: "CSV Files",
+                  accept: {
+                    "text/csv": [".csv"]
+                  }
+                }
+              );
+              break;
+            case "xlsx":
+              pickerOpts.types.push(
+                {
+                  description: "Excel Files",
+                  accept: {
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsz"]
+                  }
+                }
+              );
+              break;
+            case "xml":
+              pickerOpts.types.push(
+                {
+                  description: "XML Files",
+                  accept: {
+                    "application/xhtml+xml": [".xml"]
+                  }
+                }
+              );
+              break;
+            case "pdf":
+              pickerOpts.types.push(
+                {
+                  description: "PDF Files",
+                  accept: {
+                    "application/pdf": [".pdf"]
+                  }
+                }
+              );
+              break;
+            case "png":
+            case "jpg":
+            case "gif":
+            case "jpeg":
+              if (imgAdded === false) {
+                pickerOpts.types.push(
+                  {
+                    description: "Image Files",
+                    accept: {
+                      "image/*": [".png", ".gif", ".jpeg", ".jpg"]
+                    }
+                  }
+                );
+                imgAdded = true;
+              }
+              break;
+          }
+        });
+        let handle = await window.showOpenFilePicker(pickerOpts);
+        if (handle[0].kind === "file") {
+          let file = await handle[0].getFile();
+          let data = await this.fileReadAsDataURL(file);
+          this.setState({ file, imageData: data }, this.fileChosen);
+        }
+      } else {
+        if (!this.fileInput) {
+          this.fileInput = document.createElement("input");
+          this.fileInput.type = "file";
+          this.fileInput.style.display = "none";
+          if (this.component.getAttribute("filterPicker", "true") === "true") {
+            if (types.indexOf("*") < 0) {
+              let typeStr = "";
+              types.forEach((type) => {
+                if (typeStr.length > 0) {
+                  typeStr += ",";
+                }
+                typeStr += "." + type.trim();
+              });
+            }
+          }
+          this.fileInput.addEventListener("change", this.fileSelected);
+          let comp = document.getElementById(this.component.props.id);
+          comp.appendChild(this.fileInput);
+        }
+        this.fileInput.value = "";
+        this.fileInput.click();
       }
     } catch (e2) {
       console.log(e2);
@@ -7305,6 +7329,12 @@ var _FilePicker = class extends import_react3.default.Component {
     }
   }
   async fileSelected(e) {
+    let attr = this.component.getAttribute("allowedExtensions", "*");
+    let types = attr.split(",");
+    let opts = [];
+    types.forEach((type) => {
+      opts.push(type.trim().replace(".", ""));
+    });
     if (this.fileInput.value.length > 0) {
       const file = this.fileInput.files[0];
       let dataURL = await this.fileReadAsDataURL(file);
@@ -7318,6 +7348,13 @@ var _FilePicker = class extends import_react3.default.Component {
           null,
           "File Too Large",
           /* @__PURE__ */ import_react3.default.createElement("span", null, "The file you have chosen is ", size, " bytes long and exceeds the maximum file size of ", maxSize),
+          [new FCMModalButton("Ok", this.messageBox.hideDialog)]
+        );
+      } else if (opts.length > 0 && opts.indexOf("*") < 0 && opts.indexOf(ext) < 0) {
+        this.messageBox.showDialog(
+          null,
+          "Wrong File Type",
+          /* @__PURE__ */ import_react3.default.createElement("span", null, "The file you have chosen is not of the permitted type(s)"),
           [new FCMModalButton("Ok", this.messageBox.hideDialog)]
         );
       } else {
@@ -7376,9 +7413,8 @@ var _FilePicker = class extends import_react3.default.Component {
           this.component.triggerOutcome(this.component.getAttribute("onSelected"));
         }
       }
-    } else {
-      this.clearFile(true);
     }
+    this.clearFile(true);
   }
   async fileReadAsDataURL(file) {
     const reader = new FileReader();
@@ -7427,37 +7463,6 @@ var _FilePicker = class extends import_react3.default.Component {
       img.src = base64;
     });
   }
-  /*
-      render() {
-          
-          // handle classes attribute and hidden and size
-          let classes: string = 'template ' + this.component.getAttribute('classes', '');
-          const style: CSSProperties = {};
-          style.width = 'fit-content';
-          style.height = 'fit-content';
-  
-          if (this.component.isVisible === false) {
-              style.display = 'none';
-          }
-          if (this.component.getAttribute("width")) {
-              style.width = this.component.getAttribute("width");
-          }
-          if (this.component.getAttribute("height")) {
-              style.height = this.component.getAttribute("height");
-          }
-  
-          const title: string = this.component.label || '';
-          
-          return (
-              <div
-                  className={classes}
-                  style={style}
-              >
-                  Hello World
-              </div>
-          );
-      }
-  */
   render() {
     switch (this.mode) {
       case "basic":
@@ -7493,7 +7498,7 @@ var _FilePicker = class extends import_react3.default.Component {
       {
         style,
         className: classes,
-        id: this.props.id
+        id: this.component.props.id
       },
       /* @__PURE__ */ import_react3.default.createElement(
         FCMModal,
@@ -7557,7 +7562,7 @@ var _FilePicker = class extends import_react3.default.Component {
       "div",
       {
         style,
-        id: this.props.id
+        id: this.component.props.id
       },
       /* @__PURE__ */ import_react3.default.createElement(
         FCMModal,

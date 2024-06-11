@@ -12,7 +12,7 @@
         "classes":"List of class names to add to the root component",
         "dataField":"File data attribute name",
         "imageSize":"Image Size. The max width to scale selected images down to.",
-        "maxSizeKB":"Max File Size.  The maximuk KB size which files will be selected at.",
+        "maxSizeKB":"Max File Size.  The maximum KB size which files will be selected at.",
         "sizeField":"File size attribute name",
         "onSelected":"Outcome name to trigger when a file is selected. Optional.",
         "transparent":"Makes the component transparent",
@@ -20,6 +20,7 @@
         "mimeTypeField":"MimeType attribute name",
         "extensionField":"File Extension attribute name",
         "allowedExtensions":"Permitted extensions.  e.g. jpg, tif, png",
+        "filterPicker":"Apply extension filters to picker.  true(*) / false",
         "width":"Width. 50px, 10vw, 3rem etc. 'auto' is default",
         "height":"Height. 50px, 10vh, 3rem etc. 'auto' is default",
         "oversizeMessage":"Message to display when file too big.  insert $1 & $2 for file size & size limit values in MB"

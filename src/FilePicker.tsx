@@ -134,7 +134,7 @@ export class _FilePicker extends React.Component<any,any> {
     }
 
     async chooseFile(e: any) {
-
+        
         let pickerOpts: any = {
             types: [],
             excludeAcceptAllOption: true,
@@ -144,77 +144,107 @@ export class _FilePicker extends React.Component<any,any> {
         let attr: string = this.component.getAttribute("allowedExtensions", "*");
         let types: string[] = attr.split(",");
         let imgAdded: boolean = false;
-        types.forEach((type: string) => {
-            type=type.trim().toLowerCase();
-            switch(type){
-                case "*":
-                    pickerOpts.excludeAcceptAllOption = false;
-                    break;
-                case "csv":
-                    pickerOpts.types.push(
-                    {
-                        description: 'CSV Files',
-                        accept: {
-                            'text/csv': ['.csv'],
-                        },
-                        },
-                    );
-                    break;
-                case "xlsx":
-                    pickerOpts.types.push(
-                    {
-                        description: 'Excel Files',
-                        accept: {
-                            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsz'],
-                        },
-                        },
-                    );
-                    break;
-                case "xml":
-                    pickerOpts.types.push(
-                    {
-                        description: 'XML Files',
-                        accept: {
-                            'application/xhtml+xml': ['.xml'],
-                        },
-                        },
-                    );
-                    break;
-                case "pdf":
-                    pickerOpts.types.push(
-                    {
-                        description: 'PDF Files',
-                        accept: {
-                            'application/pdf': ['.pdf'],
-                        },
-                        },
-                    );
-                    break;
-                case "png":
-                case "jpg":
-                case "gif":
-                case "jpeg":
-                    if(imgAdded===false){
-                        pickerOpts.types.push(
-                        {
-                            description: 'Image Files',
-                            accept: {
-                                'image/*': ['.png','.gif','.jpeg','.jpg'],
-                            },
-                            },
-                        );
-                        imgAdded=true;
-                    }
-                    break;
-            }
-        });
+        
         
         try{
-            let handle: any[] = await (window as any).showOpenFilePicker(pickerOpts);
-            if(handle[0].kind === 'file') {
-                let file = await handle[0].getFile();
-                let data = await this.fileReadAsDataURL(file);
-                this.setState({file: file, imageData: data},this.fileChosen);
+            if((window as any).showOpenFilePicker){ //supported?
+                types.forEach((type: string) => {
+                    type=type.trim().toLowerCase();
+                    switch(type){
+                        case "*":
+                            pickerOpts.excludeAcceptAllOption = false;
+                            break;
+                        case "csv":
+                            pickerOpts.types.push(
+                            {
+                                description: 'CSV Files',
+                                accept: {
+                                    'text/csv': ['.csv'],
+                                },
+                                },
+                            );
+                            break;
+                        case "xlsx":
+                            pickerOpts.types.push(
+                            {
+                                description: 'Excel Files',
+                                accept: {
+                                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsz'],
+                                },
+                                },
+                            );
+                            break;
+                        case "xml":
+                            pickerOpts.types.push(
+                            {
+                                description: 'XML Files',
+                                accept: {
+                                    'application/xhtml+xml': ['.xml'],
+                                },
+                                },
+                            );
+                            break;
+                        case "pdf":
+                            pickerOpts.types.push(
+                            {
+                                description: 'PDF Files',
+                                accept: {
+                                    'application/pdf': ['.pdf'],
+                                },
+                                },
+                            );
+                            break;
+                        case "png":
+                        case "jpg":
+                        case "gif":
+                        case "jpeg":
+                            if(imgAdded===false){
+                                pickerOpts.types.push(
+                                {
+                                    description: 'Image Files',
+                                    accept: {
+                                        'image/*': ['.png','.gif','.jpeg','.jpg'],
+                                    },
+                                    },
+                                );
+                                imgAdded=true;
+                            }
+                            break;
+                    }
+                });
+                let handle: any[] = await (window as any).showOpenFilePicker(pickerOpts);
+                if(handle[0].kind === 'file') {
+                    let file = await handle[0].getFile();
+                    let data = await this.fileReadAsDataURL(file);
+                    this.setState({file: file, imageData: data},this.fileChosen);
+                }
+            }
+            else {
+                //this.pickFile();
+                if(!this.fileInput) {
+                    this.fileInput = document.createElement("input");
+                    this.fileInput.type = "file";
+                    this.fileInput.style.display = "none";
+                    if(this.component.getAttribute("filterPicker","true")==="true"){
+                        if(types.indexOf("*") < 0) {
+                            let typeStr: string = "";
+                            types.forEach((type: string)=>{
+                                if(typeStr.length > 0) {
+                                    typeStr += ","
+                                }
+                                typeStr += "." + type.trim();
+                            });
+                            //this.fileInput.accept=typeStr
+                        }
+                    }
+                    this.fileInput.addEventListener("change",this.fileSelected);
+                    //this.fileInput.addEventListener("click",this.fileSelected);
+
+                    let comp: any = document.getElementById(this.component.props.id);
+                    comp.appendChild(this.fileInput);
+                }
+                this.fileInput.value = '';
+                this.fileInput.click(); 
             }
         }
         catch(e) {
@@ -322,14 +352,28 @@ export class _FilePicker extends React.Component<any,any> {
     
     async fileSelected(e: any) {
 
+        //if(e.type === "click"){
+        //    return
+        //}
+
+        let attr: string = this.component.getAttribute("allowedExtensions", "*");
+        let types: string[] = attr.split(",");
+        let opts: string[] = [];
+        types.forEach((type: string)=>{
+            opts.push(type.trim().replace(".",""));
+        });
+
         if (this.fileInput.value.length > 0) {
             const file: File = this.fileInput.files[0];
+            //let comp: any = document.getElementById(this.component.props.id);
+            //comp.removeChild(this.fileInput);
             let dataURL: string = await this.fileReadAsDataURL(file);
             const fname: string = file.name.lastIndexOf('.') >= 0 ? file.name.substring(0, file.name.lastIndexOf('.')) : file.name;
             const ext: string = file.name.lastIndexOf('.') >= 0 ? file.name.substring(file.name.lastIndexOf('.') + 1).toLowerCase() : '';
             const typ: string = file.type;
             const size: number = file.size;
 
+            // check file size
             let maxSize: number = parseInt(this.component.getAttribute("maxSizeKB","0"));
             if(maxSize>0 && size>(maxSize * 1000)){
                 this.messageBox.showDialog(
@@ -339,8 +383,15 @@ export class _FilePicker extends React.Component<any,any> {
                     [new FCMModalButton("Ok",this.messageBox.hideDialog)]
                 );
             }
-            else {
-
+            else if(opts.length > 0 && opts.indexOf("*") < 0 && opts.indexOf(ext) < 0){// check allowed types
+                this.messageBox.showDialog(
+                    null,
+                    "Wrong File Type",
+                    (<span>The file you have chosen is not of the permitted type(s)</span>),
+                    [new FCMModalButton("Ok",this.messageBox.hideDialog)]
+                );
+            }
+            else{
                 if (this.isImage(typ)) {
                     let imgSize: number = 0;
                     if(parseInt(this.component.getAttribute("imageSize","0")) > 0) {
@@ -398,17 +449,17 @@ export class _FilePicker extends React.Component<any,any> {
                     objData.isSelected=true;
                     this.component.setStateValue(objData);
                 }
-                
-                
-                
                 if (this.component.getAttribute("onSelected","").length > 0 && this.component.outcomes[this.component.getAttribute("onSelected")]) {
                     this.component.triggerOutcome(this.component.getAttribute("onSelected"));
                 } 
             }
         }
-        else {
-            this.clearFile(true);
-        }
+        
+        // remove input
+        //let comp: any = document.getElementById(this.component.props.id);
+        //comp.removeChild(this.fileInput);
+        this.clearFile(true);
+        
     }
 
     async fileReadAsDataURL(file: any): Promise<any> {
@@ -468,37 +519,7 @@ export class _FilePicker extends React.Component<any,any> {
         });
     }
 
-    /*
-    render() {
-        
-        // handle classes attribute and hidden and size
-        let classes: string = 'template ' + this.component.getAttribute('classes', '');
-        const style: CSSProperties = {};
-        style.width = 'fit-content';
-        style.height = 'fit-content';
-
-        if (this.component.isVisible === false) {
-            style.display = 'none';
-        }
-        if (this.component.getAttribute("width")) {
-            style.width = this.component.getAttribute("width");
-        }
-        if (this.component.getAttribute("height")) {
-            style.height = this.component.getAttribute("height");
-        }
-
-        const title: string = this.component.label || '';
-        
-        return (
-            <div
-                className={classes}
-                style={style}
-            >
-                Hello World
-            </div>
-        );
-    }
-*/
+    
     render() {
         switch(this.mode) {
             
@@ -542,7 +563,7 @@ export class _FilePicker extends React.Component<any,any> {
             <div
                 style={style}
                 className={classes}
-                id={this.props.id}
+                id={this.component.props.id}
             >
                 <FCMModal
                     ref={(element: FCMModal) => {this.messageBox = element}}
@@ -605,7 +626,7 @@ export class _FilePicker extends React.Component<any,any> {
         return (
             <div
                 style={style}
-                id={this.props.id}
+                id={this.component.props.id}
             >
                 <FCMModal
                     ref={(element: FCMModal) => {this.messageBox = element}}
