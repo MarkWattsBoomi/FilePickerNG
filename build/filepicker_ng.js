@@ -7217,7 +7217,8 @@ var _FilePicker = class extends import_react3.default.Component {
         if (!this.fileInput) {
           this.fileInput = document.createElement("input");
           this.fileInput.type = "file";
-          this.fileInput.style.display = "none";
+          this.fileInput.style.width = "0";
+          this.fileInput.style.height = "0";
           if (this.component.getAttribute("filterPicker", "true") === "true") {
             if (types.indexOf("*") < 0) {
               let typeStr = "";
