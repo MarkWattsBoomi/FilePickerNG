@@ -597,7 +597,7 @@ export class _FilePicker extends React.Component<any,any> {
             allowed+=type;
         });
 
-        let classes: string = 'file-picker ' + this.component.getAttribute('classes', '');
+        let classes: string = ' ' + this.component.getAttribute('classes', '');
         const style: CSSProperties = {};
         style.width = 'fit-content';
         style.height = 'fit-content';
@@ -627,24 +627,32 @@ export class _FilePicker extends React.Component<any,any> {
 
         return (
             <div
+                className={classes}
                 style={style}
                 id={this.component.props.id}
             >
                 <FCMModal
                     ref={(element: FCMModal) => {this.messageBox = element}}
                 />
-                <span
-                    onClick={this.chooseFile}
-                    className="file-picker-button"
+                <div
+                    style={{marginBottom: "0.5rem"}}
                 >
-                    Choose file
-                </span>
-                <span
-                    className="file-picker-filename"
-                >
-                    {this.state.file?.name}
-                </span>
-                {clearButton}
+                    {title}
+                </div>
+                <div>
+                    <span
+                        onClick={this.chooseFile}
+                        className="file-picker-button"
+                    >
+                        Choose file
+                    </span>
+                    <span
+                        className="file-picker-filename"
+                    >
+                        {this.state.file?.name}
+                    </span>
+                    {clearButton}
+                </div>
             </div>
         );
     }

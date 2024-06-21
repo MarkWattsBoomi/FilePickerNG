@@ -7635,7 +7635,7 @@ var _FilePicker = class extends import_react3.default.Component {
       }
       allowed += type;
     });
-    let classes = "file-picker " + this.component.getAttribute("classes", "");
+    let classes = " " + this.component.getAttribute("classes", "");
     const style = {};
     style.width = "fit-content";
     style.height = "fit-content";
@@ -7665,6 +7665,7 @@ var _FilePicker = class extends import_react3.default.Component {
     return /* @__PURE__ */ import_react3.default.createElement(
       "div",
       {
+        className: classes,
         style,
         id: this.component.props.id
       },
@@ -7677,21 +7678,26 @@ var _FilePicker = class extends import_react3.default.Component {
         }
       ),
       /* @__PURE__ */ import_react3.default.createElement(
+        "div",
+        {
+          style: { marginBottom: "0.5rem" }
+        },
+        title
+      ),
+      /* @__PURE__ */ import_react3.default.createElement("div", null, /* @__PURE__ */ import_react3.default.createElement(
         "span",
         {
           onClick: this.chooseFile,
           className: "file-picker-button"
         },
         "Choose file"
-      ),
-      /* @__PURE__ */ import_react3.default.createElement(
+      ), /* @__PURE__ */ import_react3.default.createElement(
         "span",
         {
           className: "file-picker-filename"
         },
         this.state.file?.name
-      ),
-      clearButton
+      ), clearButton)
     );
   }
   defaultRender() {
