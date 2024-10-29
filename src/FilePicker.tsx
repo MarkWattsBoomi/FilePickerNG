@@ -40,7 +40,7 @@ export class _FilePicker extends React.Component<any,any> {
 
         this.iconRender = this.iconRender.bind(this);
 
-        this.mode = this.component.getAttribute("mode" || "default");
+        this.mode = this.component.getAttribute("mode", "default");
         this.fileTypes = this.component.getAttribute("allowed","*").split(",") || ["*"];
 
         this.state={

@@ -1,77 +1,144 @@
-This module provides a cascading combo box implementation for both default and legacy players. 
 
-# Class Name
 
-CascadingCombos
+# FilePicker
 
-The component file to import is in the root of the project
+![alt text](https://github.com/MarkWattsBoomi/FilePicker/blob/master/standard.png)
+Standard
 
-!!! Always call "npm install --s fcmlib@latest" to make sure the reference is the latest !!!
+![alt text](https://github.com/MarkWattsBoomi/FilePicker/blob/master/transparent.png)
+Transparent (transparent attribute set)
 
 ## Functionality
 
-Takes a LIST of options with each combo's values in a property and turns it into an array of combo's (one per list item property).
+Allows the user to select a local file of any type and sets that file's details and content into the component's state value.
 
-Choosing a value from one combo changes the options in the subsequent combo.
-
-
-## Datasource
-
-Set the datasource to a list of objects with one property per combo like this: -
-
-Animal, Mamal, Mouse
-Animal, Mamal, Horse
-Animal, Reptile, Lizard
-Animal, Reptile, Crocodile
-Vegetable, Fruit, Banana
-Vegetable, Fruit, Apple
+Provides configuration via attributes to attach the various selected file attributes to attributes of the underlying state object.
 
 
-## State
-
-Create a State object of the type of the model data items.
-
-
-
-## Settings
-
-### Columns
-
-Sets the display columns which will become combo boxes.
-
-### Label
-
-The Label of the component is used as the title bar
-
-## Component Attributes
+## Component Settings
 
 ### Width & Height
 
-If specified then these are applied to the outer component.
+Width and height if specified control the component's dimensions - in pixels.
 
-Can be any valid css dimension e.g. 10px, 100%, 75vw, 3rem, 10em etc.
 
-### Direction
+### Label
 
-The layout direction.
-"column" (default) or "row"
+This will be used as the title bar of the Modal Dialog if the "title" attribute is not defined.
+
+
+
+### State
+
+Either a simple string value to receive the selected file's dataURI or a complex object where the file's attributes are mapped to object
+properies via attribute.  See the Attributes section below.
+
+
+
+## Component Attributes
+
 
 ### classes
+Optional.
 
-Like all components, adding a "classes" attribute will cause that string to be added to the base component's class value
+String.
 
-### sortColumn
-optional.
-
-The developerName of a column to use to sort the items in the combo boxes - display order column name
-
-## Styling
-
-All elements of the tree can be styled by adding the specific style names to your player.
+Like all components, adding a "classes" attribute will cause that string to be added to the base container's class value
 
 
-## Page Conditions
+### imageSize
 
-The component respects the show / hide rules applied by the containing page.
+Optional.
+
+Number.
+
+If specified, any selected file of an image type will be scaled up or down to the specified width.
+
+Defaults to no modification.
 
 
+### maxSizeKB
+
+Optional.
+
+Number.
+
+Limits the size of the file allowed to be selected in KB.
+
+If the file is bigger then a modal popup warning is shown and the selection is prevented.
+
+
+### title
+
+Optional.
+
+String.
+
+The text to display in the dialog's title bar.
+
+
+### dataField
+
+Optional.
+
+String.
+
+If the state is an object then this attribute should contain the state object's attribute name to receive the File's dataUri value.
+
+### sizeField
+
+Optional.
+
+String.
+
+If the state is an object then this attribute should contain the state object's attribute name to receive the File's size.
+
+### fileNameField
+
+Optional.
+
+String.
+
+If the state is an object then this attribute should contain the state object's attribute name to receive the File's name.
+
+### mimeTypeField
+
+Optional.
+
+String.
+
+If the state is an object then this attribute should contain the state object's attribute name to receive the File's mime type.
+
+### extensionField
+
+Optional.
+
+String.
+
+If the state is an object then this attribute should contain the state object's attribute name to receive the File's extension.
+
+### transparent
+
+Optional.
+
+Boolean.
+
+If specified then the component will be drawn with no title bar or border as shown in the examples above.
+
+Useful if being used with a ModalContainer.
+
+### onSelected
+
+Optional.
+
+String.
+
+The name of an outcome to trigger after successful selection of a file.
+
+### mode
+
+Set to "default", "basic" or "icon" to control the display style.
+
+### icon
+
+The name of a glyphicn to display for the button.

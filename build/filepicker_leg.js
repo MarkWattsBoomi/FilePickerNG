@@ -7160,7 +7160,7 @@ var _FilePicker = class extends import_react3.default.Component {
     this.rescaleImage = this.rescaleImage.bind(this);
     this.chooseFile = this.chooseFile.bind(this);
     this.iconRender = this.iconRender.bind(this);
-    this.mode = this.component.getAttribute("mode");
+    this.mode = this.component.getAttribute("mode", "default");
     this.fileTypes = this.component.getAttribute("allowed", "*").split(",") || ["*"];
     this.state = {
       imgData: void 0,
