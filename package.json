@@ -1,6 +1,6 @@
 {
   "name": "filepicker",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "File Picker",
   "scripts": {
     "start": "esbuild ./src/FilePickerNew.tsx --outfile=./build/filepicker_ng.js --sourcemap=both --serve=8080 --servedir=build --bundle --format=esm --watch",
@@ -13,7 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "fcmkit": "^1.0.19",
-    "fcmlib": "^1.0.64",
+    "fcmlib": "^1.0.98",
     "react": "18.2.0"
   },
   "devDependencies": {

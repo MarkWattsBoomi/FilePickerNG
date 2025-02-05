@@ -3633,6 +3633,7 @@ var FCMCore = class extends import_react.default.Component {
     this.attributes = {};
     this.fields = {};
     this.outcomes = {};
+    this.suppressEvents = false;
     this.triggerOutcome = this.triggerOutcome.bind(this);
     this.getPageComponentDataSource = this.getPageComponentDataSource.bind(this);
     this.loadModel = this.loadModel.bind(this);
@@ -3730,10 +3731,8 @@ var FCMCore = class extends import_react.default.Component {
       let value;
       try {
         value = yield this.callRequest("values/name/" + valueName, "GET", {});
-        sessionStorage.setItem(value.developerName, JSON.stringify(value));
       } catch (e) {
         console.error(e);
-        value = JSON.parse(sessionStorage.getItem(valueName));
       } finally {
         if (value) {
           this.fields[value.developerName] = new FlowValue(value);
@@ -3747,11 +3746,9 @@ var FCMCore = class extends import_react.default.Component {
       const updateFields = [];
       if (values.constructor.name === FlowValue.name) {
         updateFields.push(values.iFlowField());
-        sessionStorage.setItem(values.developerName, JSON.stringify(values.iFlowField()));
       } else {
         for (const field of values) {
           updateFields.push(field.iFlowField());
-          sessionStorage.setItem(field.developerName, JSON.stringify(field.iFlowField()));
         }
       }
       yield this.callRequest("values", "POST", updateFields);
@@ -3836,21 +3833,8 @@ var FCMLegacy = class extends FCMCore {
   }
   //static getDerivedStateFromProps(nextProps: Readonly<any>, prevState: any): void {
   UNSAFE_componentWillReceiveProps(nextProps, nextContext) {
-    if (nextProps.id !== this.id) {
-      if (this.loadModel(nextProps)) {
-        if (this.childComponent && this.componentDidMount) {
-          this.componentDidMount();
-        }
-      } else {
-        if (this.childComponent && this.componentUpdated) {
-          this.componentUpdated(false);
-        } else if (this.childComponent && this.componentDidMount) {
-          this.componentDidMount();
-        }
-      }
-    } else {
-      let model = manywho.model.getComponent(this.id, this.flowKey);
-      if (model) {
+    if (this.suppressEvents === false) {
+      if (nextProps.id !== this.id) {
         if (this.loadModel(nextProps)) {
           if (this.childComponent && this.componentDidMount) {
             this.componentDidMount();
@@ -3860,6 +3844,38 @@ var FCMLegacy = class extends FCMCore {
             this.componentUpdated(false);
           } else if (this.childComponent && this.componentDidMount) {
             this.componentDidMount();
+          }
+        }
+      } else {
+        let model = manywho.model.getComponent(this.id, this.flowKey);
+        let reload = true;
+        switch (eContentType[model === null || model === void 0 ? void 0 : model.contentType]) {
+          case eContentType.ContentObject:
+          case eContentType.ContentList:
+            if (model.objectData === null) {
+            }
+            break;
+          default:
+            if (model.contentValue === null) {
+              reload = false;
+            }
+            break;
+        }
+        if (model && reload === true) {
+          if (this.loadModel(nextProps)) {
+            if (this.childComponent && this.componentDidMount) {
+              this.componentDidMount();
+            }
+          } else {
+            if (this.childComponent && this.componentUpdated) {
+              this.componentUpdated(false);
+            } else if (this.childComponent && this.componentDidMount) {
+              this.componentDidMount();
+            }
+          }
+        } else {
+          if (this.childComponent && this.componentUpdated) {
+            this.componentUpdated(false);
           }
         }
       }
@@ -4018,6 +4034,10 @@ var FCMLegacy = class extends FCMCore {
       return yield manywho.engine.objectDataRequest(this.id, request, this.flowKey);
     });
   }
+  getPageComponentId(componentName) {
+    var _a;
+    return (_a = manywho.model.getComponentByName(componentName, this.flowKey)) === null || _a === void 0 ? void 0 : _a.id;
+  }
   getPageComponentDataSource(componentName) {
     let employees = manywho.model.getComponentByName(componentName, this.flowKey);
     let newState = { "objectData": employees.objectData };
@@ -4028,6 +4048,9 @@ var FCMLegacy = class extends FCMCore {
   setPageComponentState(componentName, value) {
     let employees = manywho.model.getComponentByName(componentName, this.flowKey);
     manywho.state.setComponent(employees.id, value.iFlowObjectDataArray(true), this.flowKey, true);
+  }
+  setPageComponentValue(componentId, value) {
+    manywho.state.setComponent(componentId, { contentValue: value }, this.flowKey, true);
   }
   getUserEmail() {
     let email = "admin@manywho.com";
@@ -4042,6 +4065,9 @@ var FCMLegacy = class extends FCMCore {
       }
     }
     return email;
+  }
+  sync() {
+    manywho.engine.sync(this.flowKey);
   }
 };
 

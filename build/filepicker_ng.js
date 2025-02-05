@@ -3529,6 +3529,7 @@ var FCMCore = class extends import_react.default.Component {
     this.attributes = {};
     this.fields = {};
     this.outcomes = {};
+    this.suppressEvents = false;
     this.triggerOutcome = this.triggerOutcome.bind(this);
     this.getPageComponentDataSource = this.getPageComponentDataSource.bind(this);
     this.loadModel = this.loadModel.bind(this);
@@ -3626,10 +3627,8 @@ var FCMCore = class extends import_react.default.Component {
       let value;
       try {
         value = yield this.callRequest("values/name/" + valueName, "GET", {});
-        sessionStorage.setItem(value.developerName, JSON.stringify(value));
       } catch (e) {
         console.error(e);
-        value = JSON.parse(sessionStorage.getItem(valueName));
       } finally {
         if (value) {
           this.fields[value.developerName] = new FlowValue(value);
@@ -3643,11 +3642,9 @@ var FCMCore = class extends import_react.default.Component {
       const updateFields = [];
       if (values.constructor.name === FlowValue.name) {
         updateFields.push(values.iFlowField());
-        sessionStorage.setItem(values.developerName, JSON.stringify(values.iFlowField()));
       } else {
         for (const field of values) {
           updateFields.push(field.iFlowField());
-          sessionStorage.setItem(field.developerName, JSON.stringify(field.iFlowField()));
         }
       }
       yield this.callRequest("values", "POST", updateFields);
@@ -3741,6 +3738,31 @@ var FCMNew = class extends FCMCore {
   setPageComponentState(componentName, value) {
     throw new Error("Method not implemented.");
   }
+  getPageComponentId(componentName) {
+    throw new Error("Method not implemented.");
+  }
+  setPageComponentValue(componentId, value) {
+    let element = {
+      elementId: componentId,
+      elementPartial: {},
+      triggersPageCondition: false
+    };
+    switch (typeof value) {
+      case "boolean":
+        element.elementPartial.contentValue = value === true ? "true" : "false";
+        break;
+      case "number":
+        element.elementPartial.contentValue = "" + value;
+        break;
+      case "object":
+        element.elementPartial.contentValue = isNaN(value.getTime()) ? "" : value.toISOString();
+        break;
+      default:
+        element.elementPartial.contentValue = "" + value;
+        break;
+    }
+    this.props.updateElement(element);
+  }
   getPageComponentDataSource(componentName) {
     throw new Error("Method not implemented.");
   }
@@ -3749,15 +3771,63 @@ var FCMNew = class extends FCMCore {
   }
   constructor(props) {
     super(props);
-    this.flowBaseUri = window.location.origin;
+    this.flowBaseUri = window.flowBaseUri || window.location.origin;
   }
-  UNSAFE_componentWillReceiveProps(nextProps, nextContext) {
-    if (this.loadModel(nextProps)) {
-      if (this.childComponent && this.componentDidMount) {
-        this.componentDidMount();
+  /*
+      UNSAFE_componentWillReceiveProps(nextProps: Readonly<any>, nextContext: any): void {
+          // if the component id changed always reload.
+          if (nextProps.element.id !== this.id) {
+              if(this.loadModel(nextProps)){
+                  if(this.childComponent && this.componentDidMount) {
+                      this.componentDidMount();
+                  }
+              }
+              else{
+                  if(this.childComponent && this.componentUpdated) {
+                      this.componentUpdated(false);
+                  }
+                  else if(this.childComponent && this.componentDidMount) {
+                      this.componentDidMount();
+                  }
+              }
+          }
+          else {
+              let reload: boolean = true;
+              switch(this.contentType){
+                  case eContentType.ContentObject:
+                  case eContentType.ContentList:
+                      if(nextProps.element.objectData === null || nextProps.element.objectData.length === 0){
+                          reload = false;
+                      }
+                      break;
+                  default:
+                      if(nextProps.element.contentValue === null){
+                          reload = false;
+                      }
+                      break;
+              }
+  
+              if(reload){
+                  let newModel: FlowObjectDataArray = new FlowObjectDataArray(nextProps.element.objectData);
+                  if(JSON.stringify(this.objectData) != JSON.stringify(newModel)){
+                      if(this.loadModel(nextProps)){
+                          if(this.childComponent && this.componentDidMount) {
+                              this.componentDidMount();
+                          }
+                      }
+                      else {
+                          if(this.childComponent && this.componentUpdated) {
+                              this.componentUpdated(false);
+                          }
+                          else if(this.childComponent && this.componentDidMount) {
+                              this.componentDidMount();
+                          }
+                      }
+                  }
+              }
+          }
       }
-    }
-  }
+      */
   componentUpdated(changeDetected) {
   }
   loadModel(props) {
@@ -3939,6 +4009,8 @@ var FCMNew = class extends FCMCore {
       }
     }
     return email;
+  }
+  sync() {
   }
 };
 
