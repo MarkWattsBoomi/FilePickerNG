@@ -7117,6 +7117,7 @@ var _FilePicker = class extends import_react3.default.Component {
     this.version = "1.0.0";
     this.selectedItem = null;
     this.text = "";
+    this.suppress = false;
     this.lastContent = /* @__PURE__ */ import_react3.default.createElement("div", null);
     this.component = this.props.parent;
     this.fileSelected = this.fileSelected.bind(this);
@@ -7129,17 +7130,27 @@ var _FilePicker = class extends import_react3.default.Component {
     this.rescaleImage = this.rescaleImage.bind(this);
     this.chooseFile = this.chooseFile.bind(this);
     this.iconRender = this.iconRender.bind(this);
+    this.prep = this.prep.bind(this);
     this.mode = this.component.getAttribute("mode", "default");
     this.fileTypes = this.component.getAttribute("allowed", "*").split(",") || ["*"];
     this.state = {
       imgData: void 0,
       file: void 0
     };
+    this.prep();
+  }
+  async prep() {
+    this.img = this.component.getAttribute("icon");
+    this.img = await this.component.inflateValue(this.img);
+    this.forceUpdate();
   }
   async componentDidMount() {
-    await this.buildCoreTable();
-    await this.clearFile(true);
-    this.forceUpdate();
+    if (this.suppress) {
+      this.suppress = false;
+    } else {
+      await this.clearFile(true);
+      this.forceUpdate();
+    }
   }
   rescaleImage(e) {
     const width = this.img.width;
@@ -7154,15 +7165,9 @@ var _FilePicker = class extends import_react3.default.Component {
   }
   async componentUpdated(changeDetected) {
   }
-  ///////////////////////////////////////////////////////////////////////////////////////////
-  // reads the model
-  // constructs the a flat a map of rows ready for searching, sorting and direct access
-  // also builds the display column map
-  ///////////////////////////////////////////////////////////////////////////////////////////
-  async buildCoreTable() {
-  }
   async clearFile(notify = true) {
     console.log("clear file");
+    this.suppress = true;
     this.setState({
       imgData: void 0,
       file: void 0
@@ -7587,7 +7592,7 @@ var _FilePicker = class extends import_react3.default.Component {
           onClick: this.chooseFile,
           className: iconClass,
           title: "Select a file",
-          src: this.component.getAttribute("icon"),
+          src: this.img,
           alt: "No Image Defined"
         }
       )

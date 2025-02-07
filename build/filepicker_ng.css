@@ -1,4 +1,12 @@
 /* src/FilePicker.css */
+.page-component-filepicker {
+  & > .label {
+    display: none;
+  }
+  & > .outcome-group {
+    display: none;
+  }
+}
 .file-picker {
   border: 2px solid black;
   display: flex;

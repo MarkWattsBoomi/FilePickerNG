@@ -22,6 +22,7 @@ export class _FilePicker extends React.Component<any,any> {
     fileTypes: string[];
 
     messageBox: FCMModal;
+    suppress: boolean = false;
 
     lastContent: any = (<div></div>);
 
@@ -39,6 +40,7 @@ export class _FilePicker extends React.Component<any,any> {
         this.chooseFile = this.chooseFile.bind(this);
 
         this.iconRender = this.iconRender.bind(this);
+        this.prep = this.prep.bind(this);
 
         this.mode = this.component.getAttribute("mode", "default");
         this.fileTypes = this.component.getAttribute("allowed","*").split(",") || ["*"];
@@ -47,12 +49,24 @@ export class _FilePicker extends React.Component<any,any> {
             imgData: undefined,
             file: undefined,
         }
+
+        this.prep();
+    }
+
+    async prep() {
+        this.img = this.component.getAttribute("icon");
+        this.img = await this.component.inflateValue(this.img);
+        this.forceUpdate();
     }
 
     async componentDidMount() {
-        await this.buildCoreTable();
-        await this.clearFile(true);
-        this.forceUpdate();
+        if(this.suppress){
+            this.suppress=false;
+        }
+        else {
+            await this.clearFile(true);
+            this.forceUpdate();
+        }
     }
 
     rescaleImage(e: any) {
@@ -74,17 +88,10 @@ export class _FilePicker extends React.Component<any,any> {
     async componentUpdated(changeDetected: boolean) {
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////
-    // reads the model
-    // constructs the a flat a map of rows ready for searching, sorting and direct access
-    // also builds the display column map
-    ///////////////////////////////////////////////////////////////////////////////////////////
-    async buildCoreTable() {
-        
-    }
 
     async clearFile(notify: boolean = true) {
         console.log("clear file");
+        this.suppress = true;
         this.setState({
             imgData: undefined,
             file: undefined,
@@ -578,7 +585,7 @@ export class _FilePicker extends React.Component<any,any> {
                     className={iconClass}
                     //style={iconStyle}
                     title="Select a file"
-                    src={this.component.getAttribute("icon")}
+                    src={this.img}
                     alt="No Image Defined"
                 />
             </div>
