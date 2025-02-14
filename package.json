@@ -13,7 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "fcmkit": "^1.0.19",
-    "fcmlib": "^1.0.98",
+    "fcmlib": "^1.0.99",
     "react": "18.2.0"
   },
   "devDependencies": {
