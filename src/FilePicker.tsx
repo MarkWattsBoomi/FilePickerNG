@@ -308,8 +308,8 @@ export class _FilePicker extends React.Component<any,any> {
                     this.component.setStateValue(dataURL);
                 }
                 else {
-                    let objData: FlowObjectData = this.component.objectData.items[0];
-                    
+                    //let objData: FlowObjectData = this.component.objectData.items[0];
+                    let objData: FlowObjectData = FlowObjectData.newInstance(this.component.objectData.items[0].developerName);
                     if(objData) {
                         if(this.component.getAttribute("fileNameField")){
                             objData.addProperty(FlowObjectDataProperty.newInstance(
@@ -415,7 +415,7 @@ export class _FilePicker extends React.Component<any,any> {
                 }
                 else {
                     
-                    let objData: FlowObjectData = this.component.objectData.items[0];
+                    let objData: FlowObjectData = FlowObjectData.newInstance(this.component.objectData.items[0].developerName);
                     
                     
                     if(objData) {

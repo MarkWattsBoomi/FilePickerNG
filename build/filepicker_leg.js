@@ -7415,7 +7415,7 @@ var _FilePicker = class extends import_react3.default.Component {
         if (this.component.contentType === eContentType.ContentString) {
           this.component.setStateValue(dataURL);
         } else {
-          let objData = this.component.objectData.items[0];
+          let objData = FlowObjectData.newInstance(this.component.objectData.items[0].developerName);
           if (objData) {
             if (this.component.getAttribute("fileNameField")) {
               objData.addProperty(FlowObjectDataProperty.newInstance(
@@ -7503,7 +7503,7 @@ var _FilePicker = class extends import_react3.default.Component {
         if (this.component.contentType === eContentType.ContentString) {
           this.component.setStateValue(dataURL);
         } else {
-          let objData = this.component.objectData.items[0];
+          let objData = FlowObjectData.newInstance(this.component.objectData.items[0].developerName);
           if (objData) {
             if (this.component.getAttribute("fileNameField")) {
               objData.addProperty(FlowObjectDataProperty.newInstance(
