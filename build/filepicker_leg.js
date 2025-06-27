@@ -7731,6 +7731,18 @@ var _FilePicker = class extends import_react3.default.Component {
       ), clearButton)
     );
   }
+  dataURItoBlob(dataURI) {
+    var byteString = atob(dataURI.split(",")[1]);
+    var mimeString = dataURI.split(",")[0].split(":")[1].split(";")[0];
+    var ab = new ArrayBuffer(byteString.length);
+    var ia = new Uint8Array(ab);
+    for (var i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+    var blob = new Blob([ab], { type: mimeString });
+    var fileUrl = URL.createObjectURL(blob);
+    return fileUrl;
+  }
   defaultRender() {
     let componentClass = this.component.getAttribute("classes", "");
     const style = {};
@@ -7778,7 +7790,7 @@ var _FilePicker = class extends import_react3.default.Component {
     if (this.component.contentType === eContentType.ContentString) {
       fileContent = this.component.contentValue;
     } else {
-      let objData = this.component.objectData.items[0];
+      let objData = this.component.stateValue;
       if (objData) {
         fileName = objData.properties[this.component.getAttribute("fileNameField")]?.value;
         fileContent = objData.properties[this.component.getAttribute("dataField")]?.value;
@@ -7804,6 +7816,9 @@ var _FilePicker = class extends import_react3.default.Component {
             onLoad: this.rescaleImage
           }
         );
+      } else if (mimeType === "application/pdf") {
+        let fileUrl = this.dataURItoBlob(fileContent);
+        content = /* @__PURE__ */ import_react3.default.createElement("iframe", { style: { width: "100%" }, src: fileUrl });
       } else {
         content = /* @__PURE__ */ import_react3.default.createElement(
           "span",
