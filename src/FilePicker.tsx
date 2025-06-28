@@ -348,6 +348,7 @@ export class _FilePicker extends React.Component<any,any> {
                         }                     
                     }
                     objData.isSelected=true;
+                    this.suppress=true;
                     this.component.setStateValue(objData);
                 }
                 this.forceUpdate();
@@ -750,13 +751,8 @@ export class _FilePicker extends React.Component<any,any> {
             fileContent=this.component.contentValue;
         }
         else {
-            let objData: FlowObjectData = this.component.stateValue as FlowObjectData;//.objectData.items[0];
-            
-
-            if(objData) {
-                fileName = objData.properties[this.component.getAttribute("fileNameField")]?.value as string;
-                fileContent = objData.properties[this.component.getAttribute("dataField")]?.value as string;
-            }
+            fileContent = this.state.imageData;//this.component.stateValue as FlowObjectData;//.objectData.items[0];
+            fileName = this.state.file?.name;
         }
         
         //file = this.getStateValue() as FlowObjectData;
