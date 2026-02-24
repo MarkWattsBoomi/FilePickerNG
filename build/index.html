@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="robots" content="noindex" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="Boomi Flow Application" />
+        <meta name="theme-color" content="#033d58" />
+
+        <base href="https://gb-assets.flow-prod.boomi.com/runtime/nextgen/" />
+
+        <title>Flow</title>
+
+        <link rel="shortcut icon" href="img/favicon/favicon.ico" type="image/x-icon" />
+        <link rel="apple-touch-icon" sizes="144x144" href="img/favicon/144x144.png" />
+
+        <link href="assets/flow.css" rel="stylesheet" />
+        <link rel="stylesheet" href="http://localhost:8080/filepicker.css"/>
+        
+        <style>
+            html,
+            body,
+            #flow-app {
+                height: 100%;
+                /* Use alongside height: 100% for fallback on older browsers */
+                height: 100dvh;
+                margin: 0;
+            }
+        </style>
+        <script>
+            window.flowBaseUri = "https://gb.flow-prod.boomi.com";
+
+            window.onbeforeflowstart = (options, starttype) => {
+                options.components = {
+                    'endpoints':"http://localhost:8080/filepicker.js",                  
+                };
+                options.platformUri="https://gb.flow-prod.boomi.com";
+                options.tenantId="e3580f8d-ab84-4bf3-893d-98b51f712db3";
+                options.flowId="8e7b08c9-75d4-4f08-9b39-a6a87f44e991";
+                options.environmentId="fc32b176-c1c5-4f91-9573-f2da05990a79";
+                return options;
+            }
+            
+        </script>
+        <script id="flow-script" src="assets/flow.js" type="module" defer></script>
+    </head>
+
+    <body>
+        <div id="flow-app"></div>
+    </body>
+</html>

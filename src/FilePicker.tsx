@@ -161,6 +161,16 @@ export class _FilePicker extends React.Component<any,any> {
                         case "*":
                             pickerOpts.excludeAcceptAllOption = false;
                             break;
+                        case "zip":
+                            pickerOpts.types.push(
+                            {
+                                description: 'ZIP Files',
+                                accept: {
+                                    'application/zip': ['.zip'],
+                                },
+                                },
+                            );
+                            break;
                         case "csv":
                             pickerOpts.types.push(
                             {
